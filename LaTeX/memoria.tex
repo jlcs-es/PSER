@@ -1,0 +1,67 @@
+\documentclass[]{article}
+%Busca la linea que pone /tableofcontents y empieza a escribir debajo de cada sección.
+%Te explico para qué es cada cosa que sea medio relevante:
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{verbatim} %con verbatim escribes bloques de texto con letra mono.
+\usepackage{graphicx} %para insertar imagenes, cuando meta yo una usa el codigo de ejemplo
+\usepackage{listings}
+\usepackage{fullpage}
+\usepackage{color}
+\usepackage{fancyvrb}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc} %Para usar acentos directamente en latex
+\usepackage{hyperref} %Para que el indice tenga hiperenlaces y si quieres poner los tuyos
+\hypersetup{%
+	pdfborder = {0 0 0}
+}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+%Para insertar código: crea un recuadro con texto mono y lineas enumeradas. Puedes referenciar un fichero y no copiar y pegar aquí.
+\lstset{ %
+	backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+	basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+	breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+	breaklines=true,                 % sets automatic line breaking
+	captionpos=b,                    % sets the caption-position to bottom
+	commentstyle=\color{mygreen},    % comment style
+	frame=single,                    % adds a frame around the code
+	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+	numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+	numbersep=5pt,                   % how far the line-numbers are from the code
+	numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+	rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+	showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+	showstringspaces=false,          % underline spaces within strings only
+	showtabs=false,                  % show tabs within strings adding particular underscores
+	stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+	stringstyle=\color{mymauve},     % string literal style
+	tabsize=4,                       
+	title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+
+
+\title{Laboratorio de Programación de Sistemas Embebidos en Red}
+\author{José Luis Cánovas Sánchez\\Ezequiel Santamaría Navarro}
+
+\begin{document}
+
+\maketitle
+
+
+\begin{abstract}
+%Aquí el resumen
+\end{abstract}
+
+\tableofcontents
+
+
+\section{Práctica 1. Introducción a Arduino.}
+
+\section{Práctica 2. Manejo de un display LCD.}
+
+\end{document}
