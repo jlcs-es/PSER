@@ -2,6 +2,9 @@
 #define tempResN A2
 #define tempResP A0
 #define luzRes A1 
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 void setup() {
   // Led:
@@ -9,6 +12,9 @@ void setup() {
 
   // Debug
   Serial.begin(9600);
+
+  // LCD
+  lcd.begin(16, 2);
 }
 
 void loop() {
@@ -17,7 +23,8 @@ void loop() {
   // Temperaturas:
   Serial.println("Resistencia positiva:");
   int res = analogRead(tempResP);
-  Serial.println((4.88*res-400)/19.5-10.0);
+  double temp = (4.88*res-400)/19.5-10.0;
+  Serial.println(temp);
 
   Serial.println("Resistencia negativa:");
   res = analogRead(tempResN);
@@ -31,4 +38,10 @@ void loop() {
   // Led:
   res = res/4 > 127 ? 127 : res/4;
   analogWrite(pinLed,(128-res)*2-1);
+
+  // LCD:
+  lcd.setCursor(0,0);
+  lcd.print("Temp = ");
+  lcd.print(temp);
+  
 }
