@@ -4,28 +4,31 @@
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
-bool r1[10] = {1,1,1,1,1,1,1,1,1,1};
-bool r2[10] = {1,1,1,1,1,1,1,1,1,1};
+unsigned short r1 = 2047;
+unsigned short r2 = 2047;
 
-void shift(bool * r) {
-  for (int i = 9; i >= 1; i--)
-    r[i] = r[i-1];
+#define B11 0x01
+#define B10 0x02
+#define B9 0x04
+#define B8 0x08
+#define B7 0x010
+#define B6 0x020
+#define B5 0x040
+#define B4 0x080
+#define B3 0x0100
+#define B2 0x0200
+#define B1 0x0400
+
+unsigned short G1() {
+  r1 >>= 1;
+  r1 |= (((r1&B4) >> 7) ^ (r1&B11) ? B1 : 0);
+  return r1&B11;
 }
 
-bool G1() {
-  bool r = r1[9];
-  bool l = (r1[9] ^ r1[2])&1;
-  shift(r1);
-  r1[0] = l;
-  return r;
-}
-
-bool G2() {
-  bool r = (r2[2] ^ r2[7])&1;
-  bool l = (r2[9] ^ r2[8] ^ r2[7] ^ r2[5] ^ r2[2] ^ r2[1])&1;
-  shift(r2);
-  r2[0] = l;
-  return r;
+unsigned short G2() {
+  r2 >>= 1;
+  r2 |= (((r2 & B3) >> 8)  ^ ((r2 & B4) >> 7) ^ ((r2 & B7) >> 4) ^ ((r2 & B9) >> 2) ^ ((r2 & B10) >> 1) ^ (r2 & B11) ? B1 : 0);
+  return ((((r2&B4) >> 5)) ^ (r2&B9)) >> 2;
 }
 
 void setup() {
@@ -39,4 +42,5 @@ void loop() {
   //lcd.setCursor(0,0);
   //lcd.print(G1()^G2());
   digitalWrite(9, G1()^G2());
+  //delay(500);
 }
