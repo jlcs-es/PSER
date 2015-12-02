@@ -33,5 +33,17 @@ function change(e) {
     		}
 	});
 }
+
+setInterval(function () {
+	//console.log("lmao");
+	$.ajax({
+		url: "/luz",
+		type: "GET",
+		success: function(result) {
+			//console.log(result);
+			$("body").css({"background-color": ""+result+result+result});
+		}
+	});
+}, 50);
 </script>
 </html>
