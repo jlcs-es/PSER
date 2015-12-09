@@ -1,12 +1,17 @@
 #define LED_PIN 10
 #define luzRes A1 
 #include <Streaming.h>
+#include <LiquidCrystal.h>
 
 struct paquete {
   char longitud[4];
   char tipo;
   char payload[555];
-  bool leer() {
+  void leer() {
+    char test;
+    Serial1.readBytes(&test, 1);
+    while (test != '\255')
+      Serial1.readBytes(&test, 1);
     Serial1.readBytes(longitud,4);
     l = hex2int(longitud,4);
     Serial1.readBytes(&tipo,1);
@@ -41,7 +46,7 @@ unsigned long hex2int(char *a, unsigned int len)
       if(a[i] <= 57)
        val += (a[i]-48)*(1<<(4*(len-1-i)));
       else
-       val += (a[i]-55)*(1<<(4*(len-1-i)));
+       val += (a[i]-87)*(1<<(4*(len-1-i)));
    return val;
 }
 
@@ -58,6 +63,7 @@ void int2hex(char * a, unsigned int n) {
 }
 
 struct paquete luz;
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 void setup() {
   strcpy(luz.longitud,"000");
@@ -70,6 +76,10 @@ void setup() {
   //Serial1.println("");
   pinMode(LED_PIN, OUTPUT);
   analogWrite(LED_PIN,255);
+
+  lcd.begin(16, 2);
+  lcd.setCursor(0,0);
+  lcd.print("ayy");
 }
 
 void loop() { // run over and over
@@ -77,7 +87,10 @@ void loop() { // run over and over
   if (Serial1.available()) {
     p.leer();
     if (p.tipo == 'L') {
+     Serial.write(p.payload,2);
+     Serial.write("\n",1);
      long intensidad = hex2int(p.payload,2);
+     Serial.println(intensidad);
      analogWrite(LED_PIN, intensidad);
     }
   } else {
