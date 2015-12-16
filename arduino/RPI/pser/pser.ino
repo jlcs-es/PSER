@@ -4,9 +4,14 @@
 #include <LiquidCrystal.h>
 
 struct paquete {
+  paquete() {
+    this->reserved = 0;
+  }
+  
   char longitud[4];
   char tipo;
   char payload[555];
+  char reserved;
   void leer() {
     char test;
     Serial1.readBytes(&test, 1);
@@ -16,6 +21,8 @@ struct paquete {
     l = hex2int(longitud,4);
     Serial1.readBytes(&tipo,1);
     Serial1.readBytes(payload,l-5);
+    if (l-5 < 555)
+      payload[l-5] = 0;
   }
 
   void enviar() {
@@ -77,9 +84,9 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   analogWrite(LED_PIN,255);
 
-  lcd.begin(16, 2);
+  lcd.begin(20, 4);
   lcd.setCursor(0,0);
-  lcd.print("ayy");
+  lcd.print("abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz0123456789");
 }
 
 void loop() { // run over and over
@@ -92,6 +99,10 @@ void loop() { // run over and over
      long intensidad = hex2int(p.payload,2);
      Serial.println(intensidad);
      analogWrite(LED_PIN, intensidad);
+    } else if (p.tipo == 'D') {
+      Serial.println(p.payload);
+      lcd.setCursor(0,0);
+      lcd.print(p.payload);
     }
   } else {
     int res = analogRead(luzRes);
