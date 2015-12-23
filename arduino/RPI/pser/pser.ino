@@ -1,5 +1,6 @@
 #define LED_PIN 10
-#define luzRes A1 
+#define luzRes A1
+#define  tempResN A2
 #include <Streaming.h>
 #include <LiquidCrystal.h>
 
@@ -26,7 +27,7 @@ struct paquete {
   }
 
   void enviar() {
-    if (tipo == 'l' || tipo == 'L')
+    if (tipo == 'l' || tipo == 'L' || tipo == 't')
       this->enviar(7);
   }
 
@@ -70,12 +71,17 @@ void int2hex(char * a, unsigned int n) {
 }
 
 struct paquete luz;
+struct paquete tmp;
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 void setup() {
   strcpy(luz.longitud,"000");
   luz.longitud[3] = '7';
   luz.tipo = 'l';
+
+  strcpy(tmp.longitud,"000");
+  tmp.longitud[3] = '7';
+  tmp.tipo = 't';
   
   // set the data rate for the SoftwareSerial port
   Serial1.begin(4800);
@@ -109,6 +115,11 @@ void loop() { // run over and over
     res = (unsigned char)(res/4);
     int2hex(luz.payload, res);
     luz.enviar();
+
+    res = analogRead(tempResN);
+    int2hex(tmp.payload,res/4);
+    tmp.enviar();
+
     delay(50);
   }
 }
