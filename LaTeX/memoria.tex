@@ -62,25 +62,73 @@ Descripción detallada del desarrollo en el laboratorio de la asignatura,
 \clearpage
 
 \section{Práctica 1. Introducción a Arduino. Descripción del hardware}
+%TODO: Pepelu
 
 \subsection{Esquematico de conexiones}
 
 
-
-
 \section{Práctica 2. Montaje de un servidor web de monitorización. Descripción del software}
 
+En la segunda parte de la práctica hemos puesto como objetivo desarrollar algo en el ámbito de internet de las cosas. Básicamente nuestro reto ha sido poner en internet (en nuestro caso usando HTTP y servicios Web) los distintos sensores y el monitor LCD utilizados en la práctica anterior.
+
+Para ello nos hemos servido de un Arduino Due (ya que el voltaje de sus pines es compatible con la Raspberry Pi), de una Raspberry Pi y de un router Wifi que hace de punto de acceso entre la Raspberry Pi e internet.
+
 \subsection{Montaje de red}
+%TODO: Poner un esquema
+
+La Raspberry Pi, por su gran capacidad de cómputo, hace de centro de datos. Recibe información del Arduino Due a través de el puerto serie, y lo pone en internet a través de un puerto Ethernet. 
 
 \subsection{Protocolo serie}
+%TODO: Completar con la especificación.
+
+El protocolo serie es muy simple, y se basa en transmitir unas tramas con la siguiente información (en ese orden):
+
+\begin{itemize}
+	\item 4 bytes que codifican en ASCII hexadcimal el tamaño de la trama.
+	\item 1 byte que codifica en ASCII el tipo del paquete. Puede ser %TODO
+	\item Varios bytes con el payload de la trama, en ASCII. No pueden contener el byte 0.
+	\item 1 byte nulo (valor 0) que inidica fin de la trama. Se utiliza para sincronizar en caso de error.
+\end{itemize}
+
+\subsection{Código arduino}
+
+Lo primero que hemos hecho ha sido reutilizar parte del código de la primera práctica. En un bucle continuo, leemos los sensores de temperatura y luz y con la información obtenida mandamos frames por el protocolo serie a la Raspberry Pi.
+
+\hfill
+
+Por otro lado, también nos encargamos de leer frames que puedan venir de la Rapsberry Pi. Si llega un frame de tipo 'L', le cambiamos el valor al \textit{analog output} del led, haciendo que ilumine más o menos. O por si llega un frame de tipo 'D', en cuyo caso limpiamos el display y ponemos el nuevo texto en la pantalla.
 
 \subsection{Servicio web}
+El servicio web tiene dos partes, un código escrito en python que corre en la Rapsberry PI y otro código escrito en javascript que se ejecuta en un teléfono móvil, o un pc.
 
+\subsubsection{Parte servidor de python}
+En esta parte, se espera a que un navegador web estándar haga una petición de tipo GET para obtener el documento index.html. Además, está a la espera de recibir peticiones GET al documento 'luz' o al documento 'tmp'.
+
+\hfill
+
+Cada vez que recibe una petición al documento luz, lee las tramas a través del puerto serie para obtener del Arduino la última lectura del sensor de luz. Después, contesta la petición con el valor del sensor. Lo mismo sucede si se recibe una petición al documento tmp, solo que se devuelve la temperatura.
+
+\hfill
+
+Por otro lado, el servidor de python también está a la espera de las peticiones PUT 'led' y 'display'. En este caso, en vez de devolver un valor leyendo por el puerto serie, lo que hace es escribir en el puerto serie una trama de tipo 'L' (si led) o de tipo 'D' (si display) para alterar el brillo del led o el texto del monitor LCD.
+
+\subsubsection{Parte cliente de javascript}
+
+En el explorador web, se ejecuta continuamente una petición de tipo GET 'luz' y GET 'tmp', para actualizar en tiempo real la oscuridad del fondo (dependiendo del nivel de luz), o el valor de un número dependiendo de la temperatura.
+
+\hfill
+
+También se pone una barra de desplazamiento para modificar el brillo del led, y una barra de texto para cambiar el mensaje del display. Cuando se mueve la barra de desplazamiento se ejecuta un PUT 'led', y cuando se cambia el texto en la barra se ejecuta un PUT 'display', que llegan al servidor web de python.
+
+
+%TODO: Poner una imagen de ejemplo del sistema. Si no hay, poner un esquema o un dibujo.
 
 \section{Notas adicionales}
 
 \subsection{Aproximación a la temperatura real}
-%TODO: Quejarse de lo mierder que son los sensores de temperatura
+Siguiendo las indicaciones de los fabricantes de los sensores de temperatura hemos llegado a lecturas que no pueden corresponderse con la realidad (porque aparecían disparates), así que hemos tenido que aproximar la temperatura con la experimentación.
+
+%TODO: Exponer las fórmulas
 
 \subsection{Lector de pulsaciones}
 %TODO: Hablar del lector de pulsaciones
