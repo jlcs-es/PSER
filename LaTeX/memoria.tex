@@ -54,7 +54,7 @@
 
 
 \begin{abstract}
-Descripción detallada del desarrollo en el laboratorio de la asignatura, 
+En nuestra práctica final del laboratorio hemos integrado todos los sensores estudiados en la primera parte con un servidor web integrado en una raspberry pi. Por eso dividimos la memoria en describir los sensores y arduino (la primera parte de las prácticas), y la segunda en el código final que comunica la raspberry pi y arduino (la segunda parte de trabajo propio).
 \end{abstract}
 
 \tableofcontents
@@ -62,9 +62,21 @@ Descripción detallada del desarrollo en el laboratorio de la asignatura,
 \clearpage
 
 \section{Práctica 1. Introducción a Arduino. Descripción del hardware}
-%TODO: Pepelu
+Para poder utilizar directamente un cable entre la Raspberry Pi y Arduino, sin necesidad de un divisor de tensión para pasar de 5v de Arduino UNO a 3.3v de la Raspberry Pi, usamos la versión de Arduino DUE, que usa en sus pines 3.3v. Esto sólo afectará a la comunicación Arduino-Raspberry y al Led, porque son los únicos que se conectan directamente a un pin de Arduino, porque el resto de sensores los conectamos al pin de 5v que ofrece Arduino DUE, y la entrada de datos se realiza por los puertos analógicos.
 
-\subsection{Esquematico de conexiones}
+Vamos a describir brevemente en cada apartado cómo integramos cada sensor con el Arduino. Al final mostraremos una foto del sistema global donde se podrá comprobar cada esquema individual.
+
+\subsection{Led}
+
+\subsection{Sensor de luz}
+
+\subsection{NTC}
+
+\subsection{LDR}
+
+\subsection{LCD}
+
+\subsection{Generador señal tipo GPS}
 
 
 \section{Práctica 2. Montaje de un servidor web de monitorización. Descripción del software}
