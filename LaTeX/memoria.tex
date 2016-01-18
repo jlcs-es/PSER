@@ -28,6 +28,8 @@
 	breaklines=true,                 % sets automatic line breaking
 	captionpos=b,                    % sets the caption-position to bottom
 	commentstyle=\color{mygreen},    % comment style
+	 keywordstyle=\color{blue}, % keyword color
+	 stringstyle=\color{red} % string color
 	frame=single,                    % adds a frame around the code
 	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
 	numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
@@ -64,7 +66,23 @@ En nuestra práctica final del laboratorio hemos integrado todos los sensores es
 \section{Práctica 1. Introducción a Arduino. Descripción del hardware}
 Para poder utilizar directamente un cable entre la Raspberry Pi y Arduino, sin necesidad de un divisor de tensión para pasar de 5v de Arduino UNO a 3.3v de la Raspberry Pi, usamos la versión de Arduino DUE, que usa en sus pines 3.3v. Esto sólo afectará a la comunicación Arduino-Raspberry y al Led, porque son los únicos que se conectan directamente a un pin de Arduino, porque el resto de sensores los conectamos al pin de 5v que ofrece Arduino DUE, y la entrada de datos se realiza por los puertos analógicos.
 
-Vamos a describir brevemente en cada apartado cómo integramos cada sensor con el Arduino. Al final mostraremos una foto del sistema global donde se podrá comprobar cada esquema individual.
+Vamos a describir brevemente en cada apartado cómo integramos cada sensor con el Arduino. En la  \autoref{fig:squemadibujo} se ve el sistema global donde se puede comprobar cada esquema individual.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=1\linewidth]{images/squemaDibujo.PNG}
+	\caption{Esquema global}
+	\label{fig:squemadibujo}
+\end{figure}
+
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{images/squema.PNG}
+	\caption{Esquema global}
+	\label{fig:squema}
+\end{figure}
+
 
 \subsection{Led}
 
@@ -77,6 +95,8 @@ Vamos a describir brevemente en cada apartado cómo integramos cada sensor con e
 \subsection{LCD}
 
 \subsection{Generador señal tipo GPS}
+
+\lstinputlisting[language=C++,frame=single]{senialGPS.ino}
 
 
 \section{Práctica 2. Montaje de un servidor web de monitorización. Descripción del software}
@@ -144,5 +164,27 @@ Siguiendo las indicaciones de los fabricantes de los sensores de temperatura hem
 
 \subsection{Lector de pulsaciones}
 %TODO: Hablar del lector de pulsaciones
+
+\section{Código}
+\subsection{Código Arduino}
+
+Dos ficheros, uno con el código de los sensores de la primera parte, usando el Arduino UNO, y el segundo el código de Arduino DUE con el protocolo de comunicación y lectura de sensores.
+
+
+\textit{Código sensores Arduino UNO:}
+\lstinputlisting[language=C++,frame=single]{codigoSensoresArduinoUNO.ino}
+
+\textit{Código Arduino DUE:}
+\lstinputlisting[language=C++,frame=single]{pser.ino}
+
+\subsection{Código Raspberry Pi}
+
+Dos ficheros, el servidor web escrito en Python, implementando el protocolo de comunicación con Arduino DUE, y el fichero \textit{index.html} de la página web que muestran la información de los sensores o entrada de datos para pantalla y led.
+
+\textit{Código servidor Python:}
+\lstinputlisting[language=Python,frame=single]{restserver.py}
+
+\textit{Código página web:}
+\lstinputlisting[language=html,frame=single]{index.html}
 
 \end{document}
