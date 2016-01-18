@@ -67,7 +67,7 @@ En nuestra práctica final del laboratorio hemos integrado todos los sensores es
 \section{Práctica 1. Introducción a Arduino. Descripción del hardware}
 Para poder utilizar directamente un cable entre la Raspberry Pi y Arduino, sin necesidad de un divisor de tensión para pasar de 5v de Arduino UNO a 3.3v de la Raspberry Pi, usamos la versión de Arduino DUE, que usa en sus pines 3.3v. Esto sólo afectará a la comunicación Arduino-Raspberry y al Led, porque son los únicos que se conectan directamente a un pin de Arduino, porque el resto de sensores los conectamos al pin de 5v que ofrece Arduino DUE, y la entrada de datos se realiza por los puertos analógicos.
 
-Vamos a describir brevemente en cada apartado cómo integramos cada sensor con el Arduino. En la  \autoref{fig:squemadibujo} se ve el sistema global donde se puede comprobar cada esquema individual.
+Vamos a describir brevemente en cada apartado cómo integramos cada sensor con el Arduino. En la  \autoref{fig:squemadibujo} se ve el sistema global donde se puede comprobar cada esquema individual. En la última sección de la memoria se encuentra el código en C de Arduino UNO para los sensores y pantalla LCD.
 
 \begin{figure}[H]
 	\centering
@@ -100,18 +100,69 @@ Vamos a describir brevemente en cada apartado cómo integramos cada sensor con e
 \end{figure}
 
 \subsection{Led}
+Un simple circuito de una resistencia y un Led en serie, donde el led se conecta a la señal GND de Arduino y por la resistencia al pin 10 (pwm).
+
+En Arduino el código para poder controlar cuándo se enciende y apaga el led, y su intensidad por ser un pin pwm, primero en \textit{setup()} declaramos el pin 10 como de salida, y en el bucle de ejecución podemos llamar a la función \textit{digitalWrite(10, HIGH)} o con valor \textit{LOW}, para encender y apagar, o bien \textit{analogWrite(10, value)} con \textit{value} entre 0 y 255 para definir la intensidad del led.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/led.PNG}
+	\caption{Led}
+	\label{fig:led}
+\end{figure}
 
 \subsection{Sensor de luz}
 
-\subsection{NTC}
+Siguiendo el esquema de la \autoref{fig:ldr} conectamos el sensor LDR a los pines de 5v, GND y analógico en el tramo de circuito que une el LDR y la resistencia, y en el código de Arduino realizamos un \textit{analogRead(A0)} de modo que leemos el valor del pin en cada iteración. Para pasarlo a valores positivos dentre del rango de 128 niveles de luz en el código realizamos al imprimir en la interfaz serie el valor: \textit{128 - analogRead(A0)/4}, como se puede leer en la sección final de código.
 
-\subsection{LDR}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/ldr.PNG}
+	\caption{LDR}
+	\label{fig:ldr}
+\end{figure}
+
+\subsection{NTC}
+El \textit{sensor de temperatura negativo} se conecta según el esquemático de la \autoref{fig:ntc} muy parecido al LDR. Tal y como indica la documentación de arduino \url{https://www.arduino.cc/en/Reference/AnalogRead} \textit{analogRead} devuelve un valor entre 0 y 1023 para voltajes entre 0 y 5 voltios, unos aprox. 4.9mV la unidad, y además debemos calibrar según los datos del fabricante, y la experimentación, la temperatura que devuelve.
+
+En el código de la última sección se encuentran las transformaciones realizadas al valor leido, tanto en Arudino UNO como en el código Python de la Raspberry Pi.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/ntc.PNG}
+	\caption{NTC}
+	\label{fig:ntc}
+\end{figure}
+
+\subsection{PTC}
+
+Igual que el NTC, pero en vez de con lecturas de valores inversos al crecimiento de la temperatura, crece igual (de ahí que sean \textit{negativo} o \textit{positivo}). En el caso de la segunda parte de la práctica sólo usamos el NTC para medir la temperatura, pero en el código de Arduino UNO sí se encuentra el código que lee con \textit{analogRead} el valor del sensor, lo transforma, guiándonos por los datos del datasheet del fabricante y por datos experimentales para afinarlo.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/ptc.PNG}
+	\caption{PTC}
+	\label{fig:ptc}
+\end{figure}
+
 
 \subsection{LCD}
 
+El LCD tiene un buen soporte en Arduino, pues lo más \textit{complicado} es acertar a colocar los cables de los pines de Arduino y del LCD donde corresponden, pues luego tenemos la biblioteca \textit{LiquidCrystal.h} que con declarar el lcd por los pines con la orden \textit{LiquidCrystal lcd(12,11,5,4,3,2);}, inicializarlo con el tamaño de la pantalla \textit{lcd.begin(20,4)} ya tenemos preparada la pantalla para escribir con la orden \textit{lcd.pring("texto");}. Además, es muy útil la orden \textit{lcd.setCursor(0,0);} que permite volver al inicio de la pantalla para reescribir, en vez de anexar un texto detrás de otro.
+
+Es de notar que la pantalla tiene 4 filas, pero escribe primero las impares y luego las pares, es decir, que de escribir un texto largo que ocupe toda la pantalla, habría que leer las líneas 1 y 3, y después seguir por la 2 y 4. En la segunda parte de la práctica, el servidor web habilita un cuadro de texto donde lo que se escriba se mostrará en el LCD, por ello primero se hace una reordenación del texto, de modo que cuando llegue como mensaje de nuestro protocolo propio al Arduino, se imprima correctamente por la pantalla.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/lcd.PNG}
+	\caption{LCD}
+	\label{fig:lcd}
+\end{figure}
+
+
 \subsection{Generador señal tipo GPS}
 
-Programamos el Arduino UNO para que genere una señal PN semejante a los códigos C/A de los GPS. Para ello nos basamos en el esquema de la \autoref{gif:gpsGen} y programamos el código en arduino, llegando a hacer operaciones a nivel de bits para conseguir la mayor eficiencia y la mayor velocidad posibles. En el código más abajo está comentado la impresión por pantalla del código, para comprobar que es correcto, y se emite por el pin 9, el cual conectamos al osciloscopio y conseguimos entre 45kHz y 66KHz.
+Programamos el Arduino UNO para que genere una señal PN semejante a los códigos C/A de los GPS. Para ello nos basamos en el esquema de la \autoref{fig:gpsGen} y programamos el código en arduino, llegando a hacer operaciones a nivel de bits para conseguir la mayor eficiencia y la mayor velocidad posibles. En el código más abajo está comentado la impresión por pantalla del código, para comprobar que es correcto, y se emite por el pin 9, el cual conectamos al osciloscopio y conseguimos entre 45kHz y 66KHz.
 
 \begin{figure}[h!]
 	\centering
