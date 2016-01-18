@@ -5,6 +5,7 @@
 \usepackage{amssymb}
 \usepackage{verbatim} %con verbatim escribes bloques de texto con letra mono.
 \usepackage{graphicx} %para insertar imagenes, cuando meta yo una usa el codigo de ejemplo
+\usepackage{float}
 \usepackage{listings}
 \usepackage{fullpage}
 \usepackage{color}
@@ -68,7 +69,7 @@ Para poder utilizar directamente un cable entre la Raspberry Pi y Arduino, sin n
 
 Vamos a describir brevemente en cada apartado cómo integramos cada sensor con el Arduino. En la  \autoref{fig:squemadibujo} se ve el sistema global donde se puede comprobar cada esquema individual.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=1\linewidth]{images/squemaDibujo.PNG}
 	\caption{Esquema global}
@@ -76,13 +77,27 @@ Vamos a describir brevemente en cada apartado cómo integramos cada sensor con e
 \end{figure}
 
 
-\begin{figure}[h!]
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\linewidth]{images/squema.PNG}
 	\caption{Esquema global}
 	\label{fig:squema}
 \end{figure}
 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{images/arduinoUNO.jpg}
+	\caption{Conexiones en Arduino UNO}
+	\label{fig:uno}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{images/DUE2.jpg}
+	\caption{Conexiones en Arduino DUE}
+	\label{fig:due}
+\end{figure}
 
 \subsection{Led}
 
@@ -96,7 +111,36 @@ Vamos a describir brevemente en cada apartado cómo integramos cada sensor con e
 
 \subsection{Generador señal tipo GPS}
 
+Programamos el Arduino UNO para que genere una señal PN semejante a los códigos C/A de los GPS. Para ello nos basamos en el esquema de la \autoref{gif:gpsGen} y programamos el código en arduino, llegando a hacer operaciones a nivel de bits para conseguir la mayor eficiencia y la mayor velocidad posibles. En el código más abajo está comentado la impresión por pantalla del código, para comprobar que es correcto, y se emite por el pin 9, el cual conectamos al osciloscopio y conseguimos entre 45kHz y 66KHz.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{images/gpsGen.PNG}
+	\caption{Esquema generador códigos gps}
+	\label{fig:gpsGen}
+\end{figure}
+
+Código Arduino UNO:
+
 \lstinputlisting[language=C++,frame=single]{senialGPS.ino}
+
+Muestras de osciloscopio por el pin 9:
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=1\linewidth]{images/gps1.jpg}
+	\caption{45.45kHz}
+	\label{fig:gps1}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=1\linewidth]{images/gps4.jpg}
+	\caption{65.79kHz}
+	\label{fig:gps4}
+\end{figure}
+
+Para la emisión por el módulo de radio frecuencia, como sólo acepta hasta un máximo de frecuencia, habría que reducirla con el uso de la orden \textit{delay()} en Arduino.
 
 
 \section{Práctica 2. Montaje de un servidor web de monitorización. Descripción del software}
@@ -106,12 +150,21 @@ En la segunda parte de la práctica hemos puesto como objetivo desarrollar algo 
 Para ello nos hemos servido de un Arduino Due (ya que el voltaje de sus pines es compatible con la Raspberry Pi), de una Raspberry Pi y de un router Wifi que hace de punto de acceso entre la Raspberry Pi e internet.
 
 \subsection{Montaje de red}
-%TODO: Poner un esquema
 
 La Raspberry Pi, por su gran capacidad de cómputo, hace de centro de datos. Recibe información del Arduino Due a través de el puerto serie, y lo pone en internet a través de un puerto Ethernet. 
 
+\begin{figure}[H]
+\verbatiminput{net.txt}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{images/RASPI.jpg}
+	\caption{Conexión Raspberry Pi}
+	\label{fig:raspi}
+\end{figure}
+
 \subsection{Protocolo serie}
-%TODO: Completar con la especificación.
 
 El protocolo serie es muy simple, y se basa en transmitir unas tramas con la siguiente información (en ese orden):
 
@@ -169,7 +222,28 @@ En el explorador web, se ejecuta continuamente una petición de tipo GET 'luz' y
 También se pone una barra de desplazamiento para modificar el brillo del led, y una barra de texto para cambiar el mensaje del display. Cuando se mueve la barra de desplazamiento se ejecuta un PUT 'led', y cuando se cambia el texto en la barra se ejecuta un PUT 'display', que llegan al servidor web de python.
 
 
-%TODO: Poner una imagen de ejemplo del sistema. Si no hay, poner un esquema o un dibujo.
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{images/TEST1.jpg}
+	\caption{Test 1: Slider intensidad Led. Temperatura ambiente. Luz ambiente. Mensaje en LCD.}
+	\label{fig:test1}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{images/TEST2 luz.jpg}
+	\caption{Test 2: Sombra en sensor de luz $\rightarrow$ fondo de la web más oscuro.}
+	\label{fig:test2}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1\linewidth]{images/TEST3 calor.jpg}
+	\caption{Test 3: Temperatura de 120.66ºC por soldador.}
+	\label{fig:test3}
+\end{figure}
 
 \section{Notas adicionales}
 
@@ -179,7 +253,11 @@ Siguiendo las indicaciones de los fabricantes de los sensores de temperatura hem
 %TODO: Exponer las fórmulas
 
 \subsection{Lector de pulsaciones}
-%TODO: Hablar del lector de pulsaciones
+Al final del cuatrimestre pudimos experimentar con un sensor de pulsaciones del corazón. El sensor es muy sencillo de utilizar: la cara con circuitería se proteje con plástico o tela para que no toque la piel, pues las indicaciones avisan del impacto negativo de la grasa sobre el circuito, la otra cada se toca con la punta del dedo y se puede sujetar con un anillo de velcro; las conexiones son 3, tierra, voltaje, que soporta tanto 3,3v como 5v para poder usarlo en cualquier versión de Arduino, y el cable que se conecta a la entrada analógica para lectura.
+
+Usando el osciloscopio pudimos averiguar que una vez está en contacto con el dedo, el sensor mantiene dos niveles de señal: aproximadamente 2v cuando no hay pulso, sólo contacto; 3.3v cuando se detecta un pulso.
+
+De este modo, aunque no nos dio tiempo, la incorporación del sensor de pulsaciones a arduino sería hacer una lectura del sensor periódica y detectar los picos de tensión sobre los 3v, para dar margen de error al teórico 3.3v.
 
 \section{Código}
 \subsection{Código Arduino}
