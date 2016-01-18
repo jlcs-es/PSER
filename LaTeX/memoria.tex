@@ -116,11 +116,27 @@ La Raspberry Pi, por su gran capacidad de cómputo, hace de centro de datos. Rec
 El protocolo serie es muy simple, y se basa en transmitir unas tramas con la siguiente información (en ese orden):
 
 \begin{itemize}
+	\item 1 byte nulo (valor 0) que inidica inicio de la trama. Se utiliza para sincronizar en caso de error.
 	\item 4 bytes que codifican en ASCII hexadcimal el tamaño de la trama.
-	\item 1 byte que codifica en ASCII el tipo del paquete. Puede ser %TODO
-	\item Varios bytes con el payload de la trama, en ASCII. No pueden contener el byte 0.
-	\item 1 byte nulo (valor 0) que inidica fin de la trama. Se utiliza para sincronizar en caso de error.
+	\item 1 byte que codifica en ASCII el tipo del paquete.
+		\subitem L: Valor de intensidad para el \textbf{L}ed.
+		\subitem D: Texto para mostrar en el LCD \textbf{D}isplay.
+		\subitem l: Información del sensor de \textbf{l}uz.
+		\subitem t: Información del sensor de \textbf{t}emperatura.
+	\item Varios bytes con el payload de la trama, en ASCII.
 \end{itemize}
+
+
+\textit{1 byte de sincronización +}
+Paquete protocolo serie:
+\begin{verbatim}
+		+-------------------+-------+-------------........-----------------+
+		|                   |  Tipo |                                      |
+		| Longitud (4bytes) |  (1B) |         PAYLOAD (Longitud - 5 bytes) |
+		|                   |       |                                      |
+		+-------------------+-------+-------------........-----------------+
+\end{verbatim}
+
 
 \subsection{Código arduino}
 
